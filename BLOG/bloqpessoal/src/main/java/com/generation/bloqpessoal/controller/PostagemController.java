@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.generation.bloqpessoal.model.Postagem;
 import com.generation.bloqpessoal.repository.PostagemRepository;
+import com.generation.bloqpessoal.repository.TemaRepository;
 
 @RestController
 @RequestMapping("/postagens")
@@ -29,7 +30,10 @@ public class PostagemController {
 
 	
 	@Autowired    // criar e instanciar objetos 
-	private PostagemRepository postagemRepository;     //injecao de dependencia 
+	private PostagemRepository postagemRepository; //injecao de dependencia 
+	
+	@Autowired
+	private TemaRepository temaRepository;
 	
 	@GetMapping
 	public ResponseEntity<List<Postagem>> GetAll(){
@@ -51,26 +55,45 @@ public class PostagemController {
 	
 	@PostMapping       
 	public ResponseEntity<Postagem> postPostagem (@Valid @RequestBody Postagem postagem){  
-		return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
+		if (temaRepository.existsById(postagem.getTema().getId()))
+		{
+		return ResponseEntity.status(HttpStatus.CREATED).
+				body(postagemRepository.save(postagem));
+		}
+		else
+		{
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 	
 	@PutMapping
-	public ResponseEntity<Postagem> putPostagem (@Valid @RequestBody Postagem postagem){
+	public ResponseEntity<Postagem> putPostagem (@Valid @RequestBody Postagem postagem)
+	{
 		
-		return postagemRepository.findById(postagem.getId())
-			.map(resposta -> ResponseEntity.ok().body(postagemRepository.save(postagem)))
-			.orElse(ResponseEntity.notFound().build());
+		if (temaRepository.existsById(postagem.getTema().getId()))
+				{
+					 return postagemRepository.findById(postagem.getId())
+					.map(resposta -> ResponseEntity.status(HttpStatus.OK)
+					.body(postagemRepository.save(postagem)))
+					.orElse(ResponseEntity.notFound().build());
+				}
+		else
+		{
+			return ResponseEntity.notFound().build();
+		}
+		
+				 
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deletePostagem(@PathVariable Long id) {
-		
-		return postagemRepository.findById(id)
-				.map(resposta -> {
-					postagemRepository.deleteById(id);
-					return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-				})
-				.orElse(ResponseEntity.notFound().build());
-	}	
+	public ResponseEntity<?> deletePostagem(@PathVariable Long id)
+	{
+		return postagemRepository.findById(id).map(resposta -> 
+		{
+				postagemRepository.deleteById(id);
+				return ResponseEntity.noContent().build();
+		}).orElse(ResponseEntity.notFound().build());
+	}
+	
 }
