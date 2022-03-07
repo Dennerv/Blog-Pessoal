@@ -7,11 +7,19 @@ import org.springframework.stereotype.Repository;
 
 import com.generation.bloqpessoal.model.Postagem;
 
-@Repository  // (<>) <-- aqui fica a classe e id dessa classe 
-public interface PostagemRepository extends JpaRepository <Postagem, Long>{ 
 
-	
-	List <Postagem> findAllByTituloContainingIgnoreCase(String titulo);
-	
-   //	no mySQL seria >>  from tb_postagens where titulo like %titulo%;
+import java.util.List;
+
+import com.generation.bloqpessoal.model.Postagem;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+
+@Repository
+public interface PostagemRepository extends JpaRepository<Postagem, Long> {
+
+   
+	public List <Postagem> findAllByTituloContainingIgnoreCase(String titulo);
+
 }
