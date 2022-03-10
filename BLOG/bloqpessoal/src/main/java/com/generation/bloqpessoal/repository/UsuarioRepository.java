@@ -1,5 +1,6 @@
 package com.generation.bloqpessoal.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.generation.bloqpessoal.model.Usuario;
@@ -16,4 +17,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	 * select * from tb_usuarios where usuario = "usuario procurado"
 	 */
 	public Optional<Usuario> findByUsuario(String usuario);
+	
+	//Método criado para a Sessão de testes
+		public List<Usuario> findAllByNomeContainingIgnoreCase(String nome);
 }
